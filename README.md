@@ -5,3 +5,4 @@ pull-request testing №2
 pull-request testing №3
 pull-request testing №4
 pull-request testing №5
+pull-request testing №6
