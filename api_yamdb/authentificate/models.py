@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=20)
+    username = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=50, choices=(
         ('user', 'User'),
         ('moderator', 'Moderator'),
