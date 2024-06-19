@@ -17,8 +17,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'score', 'pub_date')
 
     def validate_score(self, value):
-        if value > 10:
-            raise serializers.ValidationError('Выше 10 баллов низя!')
+        if not isinstance(value, int):
+            raise serializers.ValidationError(
+                'Разрешены только числа!'
+            )
+        if value > 10 or value < 0:
+            raise serializers.ValidationError(
+                'Выше 10 баллов низя! И меньше 0 тоже...'
+            )
         return value
 
     def validate(self, attrs):
