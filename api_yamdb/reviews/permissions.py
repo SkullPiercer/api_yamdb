@@ -7,6 +7,6 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         if request.method not in permissions.SAFE_METHODS:
             return (
                 request.user == obj.author
-                or request.user.role in ('admin', 'moderator')
+                or request.user.role.lower() in ('admin', 'moderator')
             )
         return True
