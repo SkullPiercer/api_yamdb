@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Review, Title
+from reviews.models import Category, Genre, Review, Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -40,3 +41,55 @@ class ReviewSerializer(serializers.ModelSerializer):
                     'Возможно добавить только 1 отзыв к 1 произведению!'
                 )
         return attrs
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    """Сериализатор модели жанров."""
+
+    class Meta:
+        model = Genre
+        exclude = ('id',)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор модели категорий."""
+
+    class Meta:
+        model = Category
+        exclude = ('id',)
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели произведений."""
+
+    category = CategorySerializer()
+    genre = GenreSerializer(many=True)
+    rating = serializers.IntegerField()
+
+    def get_fields(self):
+        fields = super().get_fields()
+        for field in fields.values():
+            field.read_only = True
+        return fields
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+
+class TitleWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для изменения модели произведений."""
+
+    category = SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field="slug",
+    )
+    genre = SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field="slug",
+        many=True,
+    )
+
+    class Meta:
+        model = Title
+        fields = "__all__"

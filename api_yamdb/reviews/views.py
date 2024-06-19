@@ -1,18 +1,30 @@
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from reviews.permissions import IsAuthorOrReadOnly
-from reviews.serializers import ReviewSerializer
-from reviews.models import Review, Title
+from reviews.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from reviews.serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    TitleWriteSerializer
+)
+from reviews.models import Category, Genre, Review, Title
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    pass
+    """Просмотр, редактирование и удаление категорий."""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    pass
+    """Просмотр, редактирование и удаление жанров."""
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class ReviewViewset(viewsets.ModelViewSet):
@@ -35,4 +47,12 @@ class CommentViewset(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    pass
+
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return TitleSerializer
+        return TitleWriteSerializer
