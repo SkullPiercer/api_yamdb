@@ -64,7 +64,7 @@ class CommentViewset(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-
+    """Просмотр, редактирование и удаление произведений."""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
