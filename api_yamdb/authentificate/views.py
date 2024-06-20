@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from .utils import create_confirmation_code, send_confirmation_email
 from .serializers import SignUpSerializer
 
-
 User = get_user_model()
 
 
@@ -20,4 +19,5 @@ class SignUpView(generics.CreateAPIView):
         user, created = User.objects.get_or_create(**serializer.validated_data)
         confirmation_code = create_confirmation_code(user)
         send_confirmation_email(user, confirmation_code)
-        return Response({'detail': 'Код подтверждения выслан!'}, status=status.HTTP_200_OK)
+        return Response({'username': user.username,
+                         'email': user.email}, status=status.HTTP_200_OK)

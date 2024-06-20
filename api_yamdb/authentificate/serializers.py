@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -25,6 +27,9 @@ class SignUpSerializer(serializers.ModelSerializer):
         return data
 
     def validate_username(self, value):
+        if not re.match(r'^[\w.@+-]+\Z', value):
+            raise serializers.ValidationError('Некорректное имя пользователя.')
+
         if value == 'me':
             raise serializers.ValidationError('Не используйте никнейм `me`!')
         return value
