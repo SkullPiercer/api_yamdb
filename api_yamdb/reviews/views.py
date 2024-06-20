@@ -4,16 +4,17 @@ from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+from reviews.filters import TitleFilter
+from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from reviews.serializers import (
     CategorySerializer,
+    CommentSerializer,
     GenreSerializer,
     ReviewSerializer,
     TitleSerializer,
     TitleWriteSerializer
 )
-from reviews.models import Category, Genre, Review, Title
-from reviews.filters import TitleFilter
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -46,7 +47,20 @@ class ReviewViewset(viewsets.ModelViewSet):
 
 
 class CommentViewset(viewsets.ModelViewSet):
-    pass
+    http_method_names = ('get', 'post', 'patch', 'delete')
+    model = Comment
+    queryset = Comment.objects.all()
+    pagination_class = PageNumberPagination
+    permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly)
+    serializer_class = CommentSerializer
+
+    def perform_create(self, serializer):
+        review_id = self.kwargs['review_id']
+        title_id = self.kwargs['title_id']
+        title = Title.objects.get(id=title_id)
+        review = Review.objects.get(id=review_id)
+        user = self.request.user
+        serializer.save(review=review, title=title, author=user)
 
 
 class TitleViewSet(viewsets.ModelViewSet):

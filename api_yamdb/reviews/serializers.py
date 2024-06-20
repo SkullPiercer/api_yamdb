@@ -2,7 +2,32 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Category, Genre, Review, Title
+from reviews.models import Category, Comment, Genre, Review, Title
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Comment."""
+
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'author', 'pub_date')
+
+    def validate(self, attrs):
+        kwargs = self.context.get('view').kwargs
+        request = self.context.get('request')
+        if request.method == "POST":
+            get_object_or_404(
+                Title, id=kwargs.get('title_id')
+            )
+            get_object_or_404(
+                Review, id=kwargs.get('review_id')
+            )
+        return attrs
 
 
 class ReviewSerializer(serializers.ModelSerializer):
