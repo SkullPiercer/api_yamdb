@@ -74,7 +74,9 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = (
+            'id', 'name', 'year', 'genre', 'description', 'category'
+        )
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
@@ -82,14 +84,16 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     category = SlugRelatedField(
         queryset=Category.objects.all(),
-        slug_field="slug",
+        slug_field='slug',
     )
     genre = SlugRelatedField(
         queryset=Genre.objects.all(),
-        slug_field="slug",
+        slug_field='slug',
         many=True,
     )
 
     class Meta:
         model = Title
-        fields = "__all__"
+        fields = fields = (
+            'id', 'name', 'year', 'genre', 'description', 'category'
+        )
