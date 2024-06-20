@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -11,6 +12,7 @@ from reviews.serializers import (
     TitleWriteSerializer
 )
 from reviews.models import Category, Genre, Review, Title
+from reviews.filters import TitleFilter
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -51,8 +53,10 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.request.method == "GET":
+        if self.request.method == 'GET':
             return TitleSerializer
         return TitleWriteSerializer
