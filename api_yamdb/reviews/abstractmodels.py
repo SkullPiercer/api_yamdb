@@ -13,3 +13,9 @@ class CategoryGenre(models.Model):
         max_length=50,
         unique=True,
     )
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name

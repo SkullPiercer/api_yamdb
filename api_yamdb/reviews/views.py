@@ -1,18 +1,34 @@
 from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from reviews.permissions import IsAuthorOrReadOnly
-from reviews.serializers import CommentSerializer, ReviewSerializer
-from reviews.models import Comment, Review, Title
+from reviews.filters import TitleFilter
+from reviews.models import Category, Comment, Genre, Review, Title
+from reviews.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from reviews.serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    TitleWriteSerializer
+)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    pass
+    """Просмотр, редактирование и удаление категорий."""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    pass
+    """Просмотр, редактирование и удаление жанров."""
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class ReviewViewset(viewsets.ModelViewSet):
@@ -48,4 +64,14 @@ class CommentViewset(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    pass
+    """Просмотр, редактирование и удаление произведений."""
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleSerializer
+        return TitleWriteSerializer
