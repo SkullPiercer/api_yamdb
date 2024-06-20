@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import SignUpView
+from .views import ObtainTokenView, SignUpView
 
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
-    # path('api/v1/auth/token/', ..., name='token'),
+    path('token/', ObtainTokenView.as_view(), name='token'),
 ]
 
