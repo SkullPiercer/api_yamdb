@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 
-
 User = get_user_model()
 
 
@@ -19,3 +18,7 @@ def send_confirmation_email(user, confirmation_code):
         [user.email],
         fail_silently=False,
     )
+
+
+def check_confirmation_code(user, token):
+    return default_token_generator.check_token(user, token)

@@ -2,6 +2,9 @@ import re
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
+
+from .utils import check_confirmation_code
 
 User = get_user_model()
 
@@ -33,3 +36,21 @@ class SignUpSerializer(serializers.ModelSerializer):
         if value == 'me':
             raise serializers.ValidationError('Не используйте никнейм `me`!')
         return value
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    confirmation_code = serializers.CharField(max_length=250, required=True)
+    username = serializers.CharField(max_length=150, required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
+
+    def validate(self, data):
+        username = data.get('username')
+        code = data.get('confirmation_code')
+        user = get_object_or_404(User, username=username)
+        if not check_confirmation_code(user, code):
+            raise serializers.ValidationError('Неверный код подтверждения')
+        data['user'] = user
+        return data
