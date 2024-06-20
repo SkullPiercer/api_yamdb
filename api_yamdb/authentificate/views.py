@@ -1,11 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-# from django.shortcuts import get_object_or_404
-#
-# from .utils import check_confirmation_code
+from rest_framework.views import APIView
 
 from .utils import create_confirmation_code, send_confirmation_email
 from .serializers import SignUpSerializer, TokenSerializer
