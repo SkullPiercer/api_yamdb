@@ -89,7 +89,13 @@ class TitleSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
-    rating = serializers.IntegerField()
+    rating = serializers.SerializerMethodField(method_name='rating_count')
+
+    class Meta:
+        model = Title
+        fields = (
+            'id', 'name', 'year', 'rating', 'genre', 'description', 'category'
+        )
 
     def get_fields(self):
         fields = super().get_fields()
@@ -97,11 +103,11 @@ class TitleSerializer(serializers.ModelSerializer):
             field.read_only = True
         return fields
 
-    class Meta:
-        model = Title
-        fields = (
-            'id', 'name', 'year', 'genre', 'description', 'category'
-        )
+    def rating_count(self, obj):
+        reviews = obj.reviews.all()
+        if not reviews:
+            return None
+        return int(sum([review.score for review in reviews]) / len(reviews))
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
