@@ -104,11 +104,11 @@ class TitleSerializer(serializers.ModelSerializer):
         return fields
 
     def rating_count(self, obj):
-        reviews = obj.reviews.all()
+        reviews = obj.reviews_by_title.all()
         if not reviews:
             return None
         rating = sum([review.score for review in reviews]) / len(reviews)
-        return (
+        return int(
             '%.0f' % rating if rating.is_integer() else '%.2f' % rating
         )
 
