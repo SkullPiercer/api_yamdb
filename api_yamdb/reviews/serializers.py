@@ -107,7 +107,10 @@ class TitleSerializer(serializers.ModelSerializer):
         reviews = obj.reviews.all()
         if not reviews:
             return None
-        return int(sum([review.score for review in reviews]) / len(reviews))
+        rating = sum([review.score for review in reviews]) / len(reviews)
+        return (
+            '%.0f' % rating if rating.is_integer() else '%.2f' % rating
+        )
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
