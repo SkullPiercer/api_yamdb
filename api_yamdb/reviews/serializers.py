@@ -91,6 +91,12 @@ class TitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     rating = serializers.SerializerMethodField(method_name='rating_count')
 
+    class Meta:
+        model = Title
+        fields = (
+            'id', 'name', 'year', 'rating', 'genre', 'description', 'category'
+        )
+
     def get_fields(self):
         fields = super().get_fields()
         for field in fields.values():
@@ -104,12 +110,6 @@ class TitleSerializer(serializers.ModelSerializer):
         rating = sum([review.score for review in reviews]) / len(reviews)
         return int(
             '%.0f' % rating if rating.is_integer() else '%.2f' % rating
-        )
-
-    class Meta:
-        model = Title
-        fields = (
-            'id', 'name', 'year', 'rating', 'genre', 'description', 'category'
         )
 
 

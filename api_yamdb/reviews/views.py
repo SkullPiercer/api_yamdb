@@ -1,11 +1,10 @@
-from rest_framework import mixins, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
-from rest_framework.filters import SearchFilter
+from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.filters import TitleFilter
+from reviews.mixins import GenreCategoryBaseMixin
 from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.permissions import IsAuthorOrAdminOrReadOnly, IsAdminOrReadOnly
 from reviews.serializers import (
@@ -18,34 +17,18 @@ from reviews.serializers import (
 )
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
+class CategoryViewSet(GenreCategoryBaseMixin):
     """Просмотр, редактирование и удаление категорий."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+    filter_backends = (filters.SearchFilter,)
 
 
-class GenreViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
+class GenreViewSet(GenreCategoryBaseMixin):
     """Просмотр, редактирование и удаление жанров."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+    filter_backends = (filters.SearchFilter,)
 
 
 class ReviewViewset(viewsets.ModelViewSet):

@@ -150,3 +150,4 @@ media/
 
 # папка с миграциями
 migrations/
+*migrations
