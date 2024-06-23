@@ -1,10 +1,10 @@
-from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.filters import TitleFilter
+from reviews.mixins import GenreCategoryBaseMixin
 from reviews.models import Category, Comment, Genre, Review, Title
 from reviews.permissions import IsAuthorOrAdminOrReadOnly, IsAdminOrReadOnly
 from reviews.serializers import (
@@ -17,18 +17,18 @@ from reviews.serializers import (
 )
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(GenreCategoryBaseMixin):
     """Просмотр, редактирование и удаление категорий."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(GenreCategoryBaseMixin):
     """Просмотр, редактирование и удаление жанров."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
 
 
 class ReviewViewset(viewsets.ModelViewSet):
@@ -65,6 +65,7 @@ class CommentViewset(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Просмотр, редактирование и удаление произведений."""
+    http_method_names = ('get', 'post', 'patch', 'delete')
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)

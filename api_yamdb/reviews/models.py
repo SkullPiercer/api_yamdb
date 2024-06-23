@@ -13,6 +13,7 @@ class Category(CategoryGenre):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         default_related_name = 'categories'
+        ordering = ('name',)
 
 
 class Genre(CategoryGenre):
@@ -22,6 +23,7 @@ class Genre(CategoryGenre):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         default_related_name = 'genres'
+        ordering = ('name',)
 
 
 class Title(models.Model):
