@@ -29,8 +29,8 @@ class CustomUser(AbstractUser):
         verbose_name='username'
     )
     email = models.EmailField(
-        unique=True, 
-        max_length=254, 
+        unique=True,
+        max_length=254,
         verbose_name='email'
     )
     bio = models.TextField(blank=True, null=True)
