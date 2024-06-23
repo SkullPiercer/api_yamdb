@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.filters import TitleFilter
 from reviews.models import Category, Comment, Genre, Review, Title
-from reviews.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from reviews.permissions import IsAuthorOrAdminOrReadOnly, IsAdminOrReadOnly
 from reviews.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -36,7 +36,7 @@ class ReviewViewset(viewsets.ModelViewSet):
     model = Review
     queryset = Review.objects.all()
     pagination_class = PageNumberPagination
-    permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly)
+    permission_classes = (IsAuthorOrAdminOrReadOnly, IsAuthenticatedOrReadOnly)
     serializer_class = ReviewSerializer
 
     def perform_create(self, serializer):
@@ -51,7 +51,7 @@ class CommentViewset(viewsets.ModelViewSet):
     model = Comment
     queryset = Comment.objects.all()
     pagination_class = PageNumberPagination
-    permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly)
+    permission_classes = (IsAuthorOrAdminOrReadOnly, IsAuthenticatedOrReadOnly)
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):
