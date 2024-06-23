@@ -1,12 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.filters import TitleFilter
-from reviews.mixins import GenreCategoryBaseMixin
+from reviews.mixins import GenreCategoryBaseMixin, ReviewCommentMixin
 from reviews.models import Category, Comment, Genre, Review, Title
-from reviews.permissions import IsAuthorOrAdminOrReadOnly, IsAdminOrReadOnly
+from reviews.permissions import IsAdminOrReadOnly
 from reviews.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -31,12 +29,9 @@ class GenreViewSet(GenreCategoryBaseMixin):
     filter_backends = (filters.SearchFilter,)
 
 
-class ReviewViewset(viewsets.ModelViewSet):
-    http_method_names = ('get', 'post', 'patch', 'delete')
-    model = Review
+class ReviewViewset(ReviewCommentMixin):
+    """Просмотр, редактирование и удаление отзывов."""
     queryset = Review.objects.all()
-    pagination_class = PageNumberPagination
-    permission_classes = (IsAuthorOrAdminOrReadOnly, IsAuthenticatedOrReadOnly)
     serializer_class = ReviewSerializer
 
     def perform_create(self, serializer):
@@ -46,12 +41,9 @@ class ReviewViewset(viewsets.ModelViewSet):
         serializer.save(title=title, author=user)
 
 
-class CommentViewset(viewsets.ModelViewSet):
-    http_method_names = ('get', 'post', 'patch', 'delete')
-    model = Comment
+class CommentViewset(ReviewCommentMixin):
+    """Просмотр, редактирование и удаление комментариев."""
     queryset = Comment.objects.all()
-    pagination_class = PageNumberPagination
-    permission_classes = (IsAuthorOrAdminOrReadOnly, IsAuthenticatedOrReadOnly)
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):
