@@ -75,11 +75,11 @@ class UserSerializer(serializers.ModelSerializer):
 
         validate_username(username)
 
-        if (User.objects.filter(username=username).exists() 
+        if (User.objects.filter(username=username).exists()
                 and self.instance.username != username):
             raise serializers.ValidationError('Имя пользователя занято')
 
-        if (User.objects.filter(email=email).exists() 
+        if (User.objects.filter(email=email).exists()
                 and self.instance.email != email):
             raise serializers.ValidationError('Email занят')
 
