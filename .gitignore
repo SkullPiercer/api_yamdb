@@ -148,3 +148,6 @@ dmypy.json
 # папки со статикой и медиа
 media/
 
+# папка с миграциями
+migrations/
+*migrations
