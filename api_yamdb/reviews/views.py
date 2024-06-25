@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
@@ -58,7 +59,9 @@ class CommentViewset(ReviewCommentMixin):
 class TitleViewSet(viewsets.ModelViewSet):
     """Просмотр, редактирование и удаление произведений."""
     http_method_names = ('get', 'post', 'patch', 'delete')
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating_count=Avg('reviews_by_title__score')
+    )
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
