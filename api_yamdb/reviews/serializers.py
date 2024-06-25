@@ -2,7 +2,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Category, Comment, Genre, Review, Title
+from reviews.models import (
+    Category, Comment, Genre, Review, Title,
+    min_score_value, max_score_value
+)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -20,7 +23,7 @@ class CommentSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         kwargs = self.context.get('view').kwargs
         request = self.context.get('request')
-        if request.method == "POST":
+        if request.method == 'POST':
             get_object_or_404(
                 Title, id=kwargs.get('title_id')
             )
@@ -37,30 +40,23 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
+    score = serializers.IntegerField(
+        min_value=min_score_value,
+        max_value=max_score_value
+    )
 
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
 
-    def validate_score(self, value):
-        if not isinstance(value, int):
-            raise serializers.ValidationError(
-                'Разрешены только числа!'
-            )
-        if value > 10 or value < 0:
-            raise serializers.ValidationError(
-                'Выше 10 баллов низя! И меньше 0 тоже...'
-            )
-        return value
-
     def validate(self, attrs):
         request = self.context.get('request')
-        if request.method == "POST":
+        if request.method == 'POST':
             title = get_object_or_404(
-                Title, id=self.context.get('view').kwargs.get('title_id')
+                Title, id=self.context['view'].kwargs.get('title_id')
             )
-            if Review.objects.filter(
-                author=request.user, title=title
+            if title.reviews_by_title.filter(
+                author=request.user
             ).exists():
                 raise serializers.ValidationError(
                     'Возможно добавить только 1 отзыв к 1 произведению!'
@@ -89,7 +85,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
-    rating = serializers.SerializerMethodField(method_name='rating_count')
+    rating = serializers.IntegerField(source='rating_count')
 
     class Meta:
         model = Title
@@ -102,15 +98,6 @@ class TitleSerializer(serializers.ModelSerializer):
         for field in fields.values():
             field.read_only = True
         return fields
-
-    def rating_count(self, obj):
-        reviews = obj.reviews_by_title.all()
-        if not reviews:
-            return None
-        rating = sum([review.score for review in reviews]) / len(reviews)
-        return int(
-            '%.0f' % rating if rating.is_integer() else '%.2f' % rating
-        )
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
