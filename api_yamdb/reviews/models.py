@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from reviews.abstractmodels import CategoryGenre
@@ -81,7 +82,12 @@ class Review(models.Model):
     """Модель отзыва."""
 
     text = models.TextField(max_length=1000, verbose_name='Текст')
-    score = models.IntegerField(verbose_name='Оценка')
+    score = models.PositiveSmallIntegerField(
+        verbose_name='Оценка',
+        validators=[
+            MaxValueValidator(10.0), MinValueValidator(1.0)
+        ]
+    )
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE,
         related_name='reviews_by_title', verbose_name='Произведение',
