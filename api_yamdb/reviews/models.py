@@ -6,6 +6,9 @@ from reviews.abstractmodels import CategoryGenre
 
 User = get_user_model()
 
+min_score_value = 1.0
+max_score_value = 10.0
+
 
 class Category(CategoryGenre):
     """Модель категории."""
@@ -85,7 +88,8 @@ class Review(models.Model):
     score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
         validators=[
-            MaxValueValidator(10.0), MinValueValidator(1.0)
+            MaxValueValidator(max_score_value),
+            MinValueValidator(min_score_value)
         ]
     )
     title = models.ForeignKey(
