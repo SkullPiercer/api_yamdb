@@ -90,6 +90,9 @@ class GenreTitle(models.Model):
     def __str__(self):
         return f'{self.genre} {self.title}'
 
+    class Meta:
+        ordering = ('title',)
+
 
 class Review(models.Model):
     """Модель отзыва."""
