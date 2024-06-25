@@ -43,7 +43,11 @@ class CustomUser(AbstractUser):
         verbose_name='email'
     )
     bio = models.TextField(blank=True, null=True)
-    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default='user')
+    role = models.CharField(
+        max_length=50,
+        choices=ROLE_CHOICES,
+        default='user'
+    )
 
     objects = CustomUserManager()
 
