@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from reviews.abstractmodels import CategoryGenre
+from reviews.reviews_utils import get_current_year
 
 User = get_user_model()
 
@@ -36,12 +37,15 @@ class Title(models.Model):
     name = models.CharField(
         max_length=256,
         verbose_name='Название',
-        help_text='Максимально допустимое число символов - 256.'
+        help_text='Максимально допустимое число символов - 256.',
     )
-    year = models.IntegerField(
-        max_length=4,
+    year = models.PositiveSmallIntegerField(
+        db_index=True,
         verbose_name='Год создания',
-        help_text='Допустимы только числа, не более 4-х.'
+        help_text='Допустимы только числа, не более 4-х.',
+        validators=[
+            MaxValueValidator(get_current_year)
+        ],
     )
     genre = models.ManyToManyField(
         Genre,
@@ -74,8 +78,14 @@ class Title(models.Model):
 class GenreTitle(models.Model):
     """Промежуточная модель для жанров и произведений."""
 
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        verbose_name='Жанры')
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='Произведения')
 
     def __str__(self):
         return f'{self.genre} {self.title}'
