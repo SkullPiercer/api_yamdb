@@ -1,5 +1,6 @@
 import re
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
@@ -11,8 +12,7 @@ User = get_user_model()
 
 def create_confirmation_code(user):
     """Создание кода подтверждения."""
-    token = default_token_generator.make_token(user)
-    return token
+    return default_token_generator.make_token(user)
 
 
 def send_confirmation_email(user, confirmation_code):
@@ -20,7 +20,7 @@ def send_confirmation_email(user, confirmation_code):
     send_mail(
         'Код подтверждения',
         f'Ваш код: {confirmation_code}',
-        'Yamdb@yandex.ru',
+        settings.DOMAIN_NAME,
         [user.email],
         fail_silently=False,
     )
