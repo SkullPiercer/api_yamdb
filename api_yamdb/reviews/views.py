@@ -50,6 +50,12 @@ class CommentViewset(ReviewCommentMixin):
     """Просмотр, редактирование и удаление комментариев."""
     serializer_class = CommentSerializer
 
+    def get_review(self):
+        return Review.objects.filter(
+            id=self.kwargs['review_id'],
+            title_id=self.kwargs['title_id']
+        ).first()
+
     def get_queryset(self):
         return Comment.objects.filter(
             title_id=self.kwargs['title_id'],
@@ -57,9 +63,7 @@ class CommentViewset(ReviewCommentMixin):
         )
 
     def perform_create(self, serializer):
-        title_id = self.kwargs['title_id']
-        review_id = self.kwargs['review_id']
-        review = Review.objects.filter(id=review_id, title_id=title_id).first()
+        review = self.get_review()
         serializer.save(
             review=review,
             title=review.title,
