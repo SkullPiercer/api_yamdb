@@ -4,7 +4,7 @@ from rest_framework.relations import SlugRelatedField
 
 from reviews.models import (
     Category, Comment, Genre, Review, Title,
-    min_score_value, max_score_value
+    MIN_SCORE_VALUE, MAX_SCORE_VALUE
 )
 
 
@@ -41,8 +41,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username'
     )
     score = serializers.IntegerField(
-        min_value=min_score_value,
-        max_value=max_score_value
+        min_value=MIN_SCORE_VALUE,
+        max_value=MAX_SCORE_VALUE
     )
 
     class Meta:
@@ -55,8 +55,8 @@ class ReviewSerializer(serializers.ModelSerializer):
             title = get_object_or_404(
                 Title, id=self.context['view'].kwargs.get('title_id')
             )
-            if title.reviews_by_title.filter(
-                author=request.user
+            if request.user.reviews_by_author.filter(
+                title_id=title.id
             ).exists():
                 raise serializers.ValidationError(
                     'Возможно добавить только 1 отзыв к 1 произведению!'

@@ -1,4 +1,3 @@
-# Thirdparty imports
 from django.urls import include, path
 
 urlpatterns = [
