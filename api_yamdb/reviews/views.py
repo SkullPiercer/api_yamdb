@@ -5,7 +5,7 @@ from rest_framework import filters, viewsets
 
 from reviews.filters import TitleFilter
 from reviews.mixins import GenreCategoryBaseMixin, ReviewCommentMixin
-from reviews.models import Category, Comment, Genre, Review, Title
+from reviews.models import Category, Genre, Review, Title
 from reviews.permissions import IsAdminOrReadOnly
 from reviews.serializers import (
     CategorySerializer,
