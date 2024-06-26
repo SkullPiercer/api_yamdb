@@ -32,28 +32,39 @@ class GenreViewSet(GenreCategoryBaseMixin):
 
 class ReviewViewset(ReviewCommentMixin):
     """Просмотр, редактирование и удаление отзывов."""
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+    def get_title(self):
+        return Title.objects.get(id=self.kwargs['title_id'])
+
+    def get_queryset(self):
+        return Review.objects.filter(title_id=self.kwargs['title_id'])
+
     def perform_create(self, serializer):
-        title_id = self.kwargs['title_id']
-        title = Title.objects.get(id=title_id)
-        user = self.request.user
-        serializer.save(title=title, author=user)
+        serializer.save(
+            title=self.get_title(), author=self.request.user
+        )
 
 
 class CommentViewset(ReviewCommentMixin):
     """Просмотр, редактирование и удаление комментариев."""
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+    def get_queryset(self):
+        return Comment.objects.filter(
+            title_id=self.kwargs['title_id'],
+            review_id=self.kwargs['review_id']
+        )
+
     def perform_create(self, serializer):
-        review_id = self.kwargs['review_id']
         title_id = self.kwargs['title_id']
-        title = Title.objects.get(id=title_id)
-        review = Review.objects.get(id=review_id)
-        user = self.request.user
-        serializer.save(review=review, title=title, author=user)
+        review_id = self.kwargs['review_id']
+        review = Review.objects.filter(id=review_id, title_id=title_id).first()
+        serializer.save(
+            review=review,
+            title=review.title,
+            author=self.request.user
+        )
 
 
 class TitleViewSet(viewsets.ModelViewSet):
