@@ -7,8 +7,8 @@ from reviews.reviews_utils import get_current_year
 
 User = get_user_model()
 
-min_score_value = 1.0
-max_score_value = 10.0
+MIN_SCORE_VALUE = 1
+MAX_SCORE_VALUE = 10
 
 
 class Category(CategoryGenre):
@@ -101,8 +101,8 @@ class Review(models.Model):
     score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
         validators=[
-            MaxValueValidator(max_score_value),
-            MinValueValidator(min_score_value)
+            MaxValueValidator(MAX_SCORE_VALUE),
+            MinValueValidator(MIN_SCORE_VALUE)
         ]
     )
     title = models.ForeignKey(
