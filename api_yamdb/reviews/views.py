@@ -1,4 +1,5 @@
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
@@ -35,10 +36,12 @@ class ReviewViewset(ReviewCommentMixin):
     serializer_class = ReviewSerializer
 
     def get_title(self):
-        return Title.objects.get(id=self.kwargs['title_id'])
+        return get_object_or_404(
+            Title, id=self.kwargs['title_id']
+        )
 
     def get_queryset(self):
-        return Review.objects.filter(title_id=self.kwargs['title_id'])
+        return self.get_title().reviews_by_title.all()
 
     def perform_create(self, serializer):
         serializer.save(
@@ -57,10 +60,7 @@ class CommentViewset(ReviewCommentMixin):
         ).first()
 
     def get_queryset(self):
-        return Comment.objects.filter(
-            title_id=self.kwargs['title_id'],
-            review_id=self.kwargs['review_id']
-        )
+        return self.get_review().comments_by_review.all()
 
     def perform_create(self, serializer):
         review = self.get_review()
